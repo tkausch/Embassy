@@ -113,7 +113,7 @@ public final class TCPSocket {
         let size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         // bind the address and port on socket
         guard withUnsafePointer(to: &address, { pointer in
-            #if swift(>=5.7)
+            #if compiler(>=5.7)
                 let count = 1
             #else
                 let count = Int(size)
@@ -139,7 +139,7 @@ public final class TCPSocket {
         var address = sockaddr_in6()
         var size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         let clientFileDescriptor = withUnsafeMutablePointer(to: &address) { pointer in
-            #if swift(>=5.7)
+            #if compiler(>=5.7)
                 let count = 1
             #else
                 let count = Int(size)
@@ -171,7 +171,7 @@ public final class TCPSocket {
         let size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         // connect to the host and port
         let connectResult = withUnsafePointer(to: &address) { pointer in
-            #if swift(>=5.7)
+            #if compiler(>=5.7)
                 let count = 1
             #else
                 let count = Int(size)
@@ -233,7 +233,7 @@ public final class TCPSocket {
         var address = sockaddr_storage()
         var size = socklen_t(MemoryLayout<sockaddr_storage>.size)
         return try withUnsafeMutablePointer(to: &address) { pointer in
-            #if swift(>=5.7)
+            #if compiler(>=5.7)
                 let count = 1
             #else
                 let count = Int(size)
@@ -249,7 +249,7 @@ public final class TCPSocket {
             }
             switch Int32(pointer.pointee.ss_family) {
             case AF_INET:
-                #if swift(>=5.7)
+                #if compiler(>=5.7)
                     let count = 1
                 #else
                     let count = MemoryLayout<sockaddr_in>.size
@@ -268,7 +268,7 @@ public final class TCPSocket {
                     )
                 }
             case AF_INET6:
-                #if swift(>=5.7)
+                #if compiler(>=5.7)
                     let count = 1
                 #else
                     let count = MemoryLayout<sockaddr_in6>.size

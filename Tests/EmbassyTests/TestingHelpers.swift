@@ -66,7 +66,7 @@ func getUnusedTCPPort() throws -> Int {
     let addressSize = socklen_t(MemoryLayout<sockaddr_in>.size)
     // given port 0, and bind, it will find us an available port
     guard withUnsafePointer(to: &address, { pointer in
-        #if swift(>=5.7)
+        #if compiler(>=5.7)
             let count = 1
         #else
             let count = Int(addressSize)
@@ -84,7 +84,7 @@ func getUnusedTCPPort() throws -> Int {
     var socketAddress = sockaddr_in()
     var socketAddressSize = socklen_t(MemoryLayout<sockaddr_in>.size)
     guard withUnsafeMutablePointer(to: &socketAddress, { pointer in
-        #if swift(>=5.7)
+        #if compiler(>=5.7)
             let count = 1
         #else
             let count = Int(socketAddressSize)
