@@ -113,7 +113,12 @@ public final class TCPSocket {
         let size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         // bind the address and port on socket
         guard withUnsafePointer(to: &address, { pointer in
-            return pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { pointer in
+            #if swift(>=5.7)
+                let count = 1
+            #else
+                let count = Int(size)
+            #endif
+            return pointer.withMemoryRebound(to: sockaddr.self, capacity: count) { pointer in
                 return SystemLibrary.bind(fileDescriptor, pointer, size) >= 0
             }
         }) else {
@@ -134,7 +139,12 @@ public final class TCPSocket {
         var address = sockaddr_in6()
         var size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         let clientFileDescriptor = withUnsafeMutablePointer(to: &address) { pointer in
-            return pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { pointer in
+            #if swift(>=5.7)
+                let count = 1
+            #else
+                let count = Int(size)
+            #endif
+            return pointer.withMemoryRebound(to: sockaddr.self, capacity: count) { pointer in
                 return SystemLibrary.accept(fileDescriptor, pointer, &size)
             }
         }
@@ -161,7 +171,12 @@ public final class TCPSocket {
         let size = socklen_t(MemoryLayout<sockaddr_in6>.size)
         // connect to the host and port
         let connectResult = withUnsafePointer(to: &address) { pointer in
-            return pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { pointer in
+            #if swift(>=5.7)
+                let count = 1
+            #else
+                let count = Int(size)
+            #endif
+            return pointer.withMemoryRebound(to: sockaddr.self, capacity: count) { pointer in
                 return SystemLibrary.connect(fileDescriptor, pointer, size)
             }
         }
@@ -218,9 +233,14 @@ public final class TCPSocket {
         var address = sockaddr_storage()
         var size = socklen_t(MemoryLayout<sockaddr_storage>.size)
         return try withUnsafeMutablePointer(to: &address) { pointer in
+            #if swift(>=5.7)
+                let count = 1
+            #else
+                let count = Int(size)
+            #endif
             let result = pointer.withMemoryRebound(
                 to: sockaddr.self,
-                capacity: 1
+                capacity: count
             ) { addressptr in
                 return function(fileDescriptor, addressptr, &size)
             }
@@ -229,9 +249,14 @@ public final class TCPSocket {
             }
             switch Int32(pointer.pointee.ss_family) {
             case AF_INET:
+                #if swift(>=5.7)
+                    let count = 1
+                #else
+                    let count = MemoryLayout<sockaddr_in>.size
+                #endif
                 return try pointer.withMemoryRebound(
                     to: sockaddr_in.self,
-                    capacity: 1
+                    capacity: count
                 ) { addressptr in
                     return (
                         try structToAddress(
@@ -243,9 +268,14 @@ public final class TCPSocket {
                     )
                 }
             case AF_INET6:
+                #if swift(>=5.7)
+                    let count = 1
+                #else
+                    let count = MemoryLayout<sockaddr_in6>.size
+                #endif
                 return try pointer.withMemoryRebound(
                     to: sockaddr_in6.self,
-                    capacity: 1
+                    capacity: count
                 ) { addressptr in
                     return (
                         try structToAddress(
